@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import connectDB from "./configs/db";
 // import routes from "./routes/index";
 
 dotenv.config();
@@ -23,22 +23,9 @@ app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGODB;
 
-if (!MONGO_URI) {
-  console.error("MONGODB connection string is missing in .env");
-  process.exit(1);
-}
-
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to connect to MongoDB", err);
-    process.exit(1);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
+});

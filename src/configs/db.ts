@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const connectDB = async (): Promise<void> => {
-  const MONGO_URI = process.env.MONGODB;
+  const MONGO_URI = process.env.MONGODB_URI;
 
   if (!MONGO_URI) {
     console.error("MONGODB connection string is missing in .env");

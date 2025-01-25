@@ -1,4 +1,4 @@
-import { Model, model, Schema, Types } from "mongoose";
+import { Model, model, Schema, Types, models } from "mongoose";
 
 interface IProfile {
   _id: Types.ObjectId;
@@ -14,7 +14,7 @@ interface IProfile {
   fullName: string;
 }
 
-const userSchema = new Schema<IProfile, Model<IProfile>>(
+const profileSchema = new Schema<IProfile, Model<IProfile>>(
   {
     firstName: {
       type: String,
@@ -32,7 +32,7 @@ const userSchema = new Schema<IProfile, Model<IProfile>>(
     },
     telephone: {
       type: String,
-      unique: true
+      unique: true,
     },
     nationality: String,
     title: String,
@@ -42,14 +42,14 @@ const userSchema = new Schema<IProfile, Model<IProfile>>(
   {
     timestamps: true,
     toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    toObject: { virtuals: true },
   }
 );
 
-userSchema.virtual("fullName").get(function () {
+profileSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
-})
+});
 
-const User = model<IProfile, Model<IProfile>>("User", userSchema);
+const Profile = models.Profile || model<IProfile, Model<IProfile>>("Profile", profileSchema);
 
-export default User;
+export default Profile;

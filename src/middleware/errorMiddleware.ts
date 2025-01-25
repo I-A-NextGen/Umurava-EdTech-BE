@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { errorResponse, failureResponse } from "../utils/responsesUtils";
+import { errorResponse, failResponse } from "../utils/responsesUtils";
 import { AppError } from "../utils/errorsUtils";
 import mongoose from "mongoose";
 import Joi from "joi";
@@ -15,11 +15,11 @@ const errorHandler = (
 
   // Mongoose errors
   if (err instanceof mongoose.Error.ValidationError) {
-    customError = new AppError("failure", 422, err.message, true, err.errors);
+    customError = new AppError("fail", 422, err.message, true, err.errors);
   }
   if (err instanceof mongoose.Error.CastError) {
     customError = new AppError(
-      "failure",
+      "fail",
       400,
       `Invalid ${err.path}: ${err.value}`,
       true,
@@ -27,7 +27,9 @@ const errorHandler = (
     );
   }
   if (err.name === "MongoServerError") {
-    customError = new AppError("error", 500, err.message, true);
+    customError = new AppError("error", 500, err.message, true, {
+      stack: err.stack,
+    });
   }
 
   // Joi errors
@@ -36,8 +38,9 @@ const errorHandler = (
       field: error.path.join(", ") || "unknown",
       message: error.message || "Invalid input",
     }));
+
     customError = new AppError(
-      "failure",
+      "fail",
       400,
       "Validation Error: Please ensure your input is correct.",
       true,
@@ -49,7 +52,7 @@ const errorHandler = (
     switch (err.name) {
       case "TokenExpiredError":
         customError = new AppError(
-          "failure",
+          "fail",
           401,
           "Token has expired. Please log in again.",
           true,
@@ -58,7 +61,7 @@ const errorHandler = (
         break;
       case "JsonWebTokenError":
         customError = new AppError(
-          "failure",
+          "fail",
           401,
           "Invalid token. Please log in again.",
           true,
@@ -67,7 +70,7 @@ const errorHandler = (
         break;
       default:
         customError = new AppError(
-          "failure",
+          "fail",
           401,
           "An authentication error occurred.",
           true,
@@ -83,12 +86,22 @@ const errorHandler = (
     });
   }
 
-  if (customError.status! === "failure") {
-    failureResponse(res, customError.statusCode!, customError.message!);
+  if (customError.status! === "fail") {
+    failResponse(
+      res,
+      customError.statusCode!,
+      customError.message!,
+      customError.details
+    );
     return;
   }
 
-  errorResponse(res, customError.statusCode!, customError.message!);
+  errorResponse(
+    res,
+    customError.statusCode!,
+    customError.message!,
+    customError.details
+  );
   return;
 };
 

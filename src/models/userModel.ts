@@ -1,11 +1,18 @@
 import { Model, model, Schema, Types, models } from "mongoose";
+import bcrypt from "bcryptjs";
 
-interface IUser {
+export enum UserRole {
+  ADMIN = "ADMIN",
+  TALENT = "TALENT",
+  CLIENT = "CLIENT",
+}
+
+interface IUser extends Document {
   _id: Types.ObjectId;
   email: string;
   password: string;
-  status: boolean;
-  role: string;
+  status: string;
+  role: UserRole;
   twoFAEnabled: boolean;
   otp: {
     otp: string;
@@ -15,6 +22,7 @@ interface IUser {
     email: boolean;
     inApp: boolean;
   };
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser, Model<IUser>>(
@@ -29,16 +37,23 @@ const userSchema = new Schema<IUser, Model<IUser>>(
       type: String,
       required: true,
       unique: true,
+      select: false,
     },
     status: {
-      type: Boolean,
-      required: true,
+      type: String,
+      default: "ACTIVE",
     },
     twoFAEnabled: {
       type: Boolean,
       default: true,
     },
-    role: String,
+    role: {
+      type: String,
+      enum: {
+        values: Object.values(UserRole),
+      },
+      default: UserRole.TALENT,
+    },
     notification: {
       type: new Schema<IUser["notification"]>({
         email: {
@@ -62,6 +77,16 @@ const userSchema = new Schema<IUser, Model<IUser>>(
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
+userSchema.methods.comparePassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  const isPasswordValid = await bcrypt.compare(
+    candidatePassword,
+    this.password
+  );
+  return isPasswordValid;
+};
+
 userSchema.virtual("profile", {
   ref: "Profile",
   foreignField: "user",
@@ -69,6 +94,6 @@ userSchema.virtual("profile", {
   justOne: true,
 });
 
-const User = models.User || model<IUser, Model<IUser>>("User", userSchema);
+const User = model<IUser, Model<IUser>>("User", userSchema);
 
 export default User;

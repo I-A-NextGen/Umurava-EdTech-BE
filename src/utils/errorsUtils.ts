@@ -1,11 +1,11 @@
 export class AppError extends Error {
-  public readonly status: "error" | "failure";
+  public readonly status: "error" | "fail";
   public readonly statusCode: number;
   public readonly isOperational: boolean;
   public readonly details: unknown;
 
   constructor(
-    status: "error" | "failure",
+    status: "error" | "fail",
     statusCode: number,
     message: string,
     isOperational = true,

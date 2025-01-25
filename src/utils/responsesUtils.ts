@@ -15,16 +15,18 @@ export const successResponse = (
     data,
   });
 
-export const failureResponse = (
+export const failResponse = (
   res: Response,
   statusCode: number,
   message: string,
-  stack?: unknown
+  // detail: unknown,
+  details?: unknown
 ): Response => {
   return res.status(statusCode).json({
-    status: "failure",
+    status: "fail",
     message,
-    stack: process.env.NODE_ENV === "development" ? stack || null : undefined,
+    details:
+      process.env.NODE_ENV !== "production" ? details || null : undefined,
   });
 };
 
@@ -32,11 +34,12 @@ export const errorResponse = (
   res: Response,
   statusCode: number,
   message: string,
-  stack?: unknown
+  details?: unknown
 ): Response => {
   return res.status(statusCode).json({
     status: "error",
     message,
-    stack: process.env.NODE_ENV === "development" ? stack || null : undefined,
+    details:
+      process.env.NODE_ENV !== "production" ? details || null : undefined,
   });
 };

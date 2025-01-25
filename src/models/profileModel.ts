@@ -10,7 +10,7 @@ interface IProfile {
   bio: string;
   nationality: string;
   location: string;
-  telephone: string;
+  // telephone: string;
   fullName: string;
 }
 
@@ -30,10 +30,10 @@ const profileSchema = new Schema<IProfile, Model<IProfile>>(
       index: true,
       ref: "User",
     },
-    telephone: {
-      type: String,
-      unique: true,
-    },
+    // telephone: {
+    //   type: String,
+    //   unique: true,
+    // },
     nationality: String,
     title: String,
     bio: String,
@@ -50,6 +50,7 @@ profileSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
-const Profile = models.Profile || model<IProfile, Model<IProfile>>("Profile", profileSchema);
+const Profile =
+  models.Profile || model<IProfile, Model<IProfile>>("Profile", profileSchema);
 
 export default Profile;

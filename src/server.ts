@@ -3,27 +3,27 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./configs/db";
 import routes from "./routes/index";
+import errorHandler from "./middleware/errorMiddleware";
 
 dotenv.config();
 
 const app = express();
 
-const origins = process.env.CORS_ORIGINS?.split(',') || []
+const origins = process.env.CORS_ORIGINS?.split(",") || [];
 
-console.log(origins)
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'prod' ? origins : "*",
+  origin: process.env.NODE_ENV === "prod" ? origins : "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
 app.use("/", routes);
 
-app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
-  res.status(500).json({ message: err.message });
-});
+// Error handler middleware
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 

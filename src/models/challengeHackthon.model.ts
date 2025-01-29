@@ -5,7 +5,7 @@ interface IChallengeHackathon {
   title: string;
   deadline: Date;
   duration: string;
-  moneyPrize: number;
+  moneyPrize: string;
   contactEmail: string;
   projectDescription: string;
   projectBrief: string;
@@ -21,7 +21,7 @@ const challengeHackathonSchema = new Schema<IChallengeHackathon, Model<IChalleng
     title: { type: String, required: true },
     deadline: { type: Date, required: true },
     duration: { type: String, required: true },
-    moneyPrize: { type: Number, required: true },
+    moneyPrize: { type: String, required: true },
     contactEmail: { type: String, required: true },
     projectDescription: { type: String, required: true },
     projectBrief: { type: String, required: true },

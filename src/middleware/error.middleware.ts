@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { errorResponse, failResponse } from "../utils/responsesUtils";
-import { AppError } from "../utils/errorsUtils";
+import { errorResponse, failResponse } from "../utils/responses.utils";
+import { AppError } from "../utils/errors.utils";
 import mongoose from "mongoose";
 import Joi from "joi";
 import { JsonWebTokenError } from "jsonwebtoken";

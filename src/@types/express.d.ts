@@ -1,9 +1,9 @@
-import { UserRoles } from "../models/userModel";
+import { UserRoles } from "../models/user.model";
 
 declare global {
   namespace Express {
-    interface Request {
-      user?: {
+    export interface Request {
+      user: {
         id: string;
         email: string;
         role: UserRoles;

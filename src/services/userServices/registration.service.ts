@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import User, { UserRoles } from "../../models/userModel";
-import { AppError } from "../../utils/errorsUtils";
-import Profile from "../../models/profileModel";
+import User, { UserRoles } from "../../models/user.model";
+import { AppError } from "../../utils/errors.utils";
+import Profile from "../../models/profile.model";
 
 interface IUserInput {
   role: UserRoles;

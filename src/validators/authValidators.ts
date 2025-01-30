@@ -1,8 +1,8 @@
 import Joi from "joi";
-import { UserRole } from "../models/userModel";
+import { UserRoles } from "../models/userModel";
 
 export const registerUserSchema = Joi.object({
-  role: Joi.string().valid(UserRole.CLIENT, UserRole.TALENT).required(),
+  role: Joi.string().valid(UserRoles.CLIENT, UserRoles.TALENT).required(),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),

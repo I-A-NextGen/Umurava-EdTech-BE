@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
-import User, { UserRole } from "../../models/userModel";
+import User, { UserRoles } from "../../models/userModel";
 import { AppError } from "../../utils/errorsUtils";
 import Profile from "../../models/profileModel";
 
 interface IUserInput {
-  role: UserRole;
+  role: UserRoles;
   firstName: string;
   lastName: string;
   email: string;

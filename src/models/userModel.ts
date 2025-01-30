@@ -1,7 +1,7 @@
 import { Model, model, Schema, Types, models } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export enum UserRole {
+export enum UserRoles {
   ADMIN = "ADMIN",
   TALENT = "TALENT",
   CLIENT = "CLIENT",
@@ -12,7 +12,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   status: string;
-  role: UserRole;
+  role: UserRoles;
   twoFAEnabled: boolean;
   otp: {
     otp: string;
@@ -50,9 +50,9 @@ const userSchema = new Schema<IUser, Model<IUser>>(
     role: {
       type: String,
       enum: {
-        values: Object.values(UserRole),
+        values: Object.values(UserRoles),
       },
-      default: UserRole.TALENT,
+      default: UserRoles.TALENT,
     },
     notification: {
       type: new Schema<IUser["notification"]>({

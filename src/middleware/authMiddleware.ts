@@ -1,25 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/errorsUtils";
-import User, { UserRole } from "../models/userModel";
-import { Types } from "mongoose";
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        email: string;
-        role: UserRole;
-      };
-    }
-  }
-}
+import User, { UserRoles } from "../models/userModel";
 
 interface IJwtPayload extends jwt.JwtPayload {
   sub: string;
   email: string;
-  role: UserRole;
+  role: UserRoles;
 }
 
 const authenticate = async (

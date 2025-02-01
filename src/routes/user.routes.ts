@@ -1,5 +1,5 @@
-import { Request, Router } from "express";
-import { postLoginUser, postRegisterUser } from "../controllers/authController";
+import { Router } from "express";
+import { postLoginUser, postRegisterUser } from "../controllers/auth.controller";
 
 const router = Router();
 

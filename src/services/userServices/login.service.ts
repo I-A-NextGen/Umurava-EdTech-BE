@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "../../models/userModel";
-import { AppError } from "../../utils/errorsUtils";
+import User from "../../models/user.model";
+import { AppError } from "../../utils/errors.utils";
 
 const loginUser = async ({
   email,

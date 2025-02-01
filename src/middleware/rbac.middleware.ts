@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../utils/errorsUtils";
-import User, { UserRoles } from "../models/userModel";
+import { AppError } from "../utils/errors.utils";
+import User, { UserRoles } from "../models/user.model";
 
 const authorize =
   (...roles: Array<UserRoles>) =>

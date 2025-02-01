@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
-import userRoutes from "./userRoutes";
+import userRoutes from "./user.routes";
+import competitionRoutes from "./competition.routes";
 import swaggerUI from "swagger-ui-express";
 import swaggerDocs from "../configs/swagger";
 import fs from "fs";
@@ -23,5 +24,7 @@ router.use(
 );
 
 router.use("/user", userRoutes);
+
+router.use("/competitions", competitionRoutes);
 
 export default router;

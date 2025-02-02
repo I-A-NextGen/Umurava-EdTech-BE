@@ -43,7 +43,6 @@ export const postCompetition = async (
 
     return;
   } catch (error) {
-    console.log((error as Error).message);
     next(error);
   }
 };
@@ -57,6 +56,7 @@ export const getCompetitions = async (
   try {
     const page = req.query.page || "1";
     const limit = req.query.limit || "40";
+    const search = req.query.search;
 
     const { error } = getCompetitionsSchema.validate(
       { page, limit },
@@ -68,6 +68,7 @@ export const getCompetitions = async (
     const competitions = await fetchAllCompetitions({
       page: parseInt(page as string),
       limit: parseInt(limit as string),
+      search: search as string,
     });
 
     successResponse(res, 200, "Competitions retrieved successful.", {

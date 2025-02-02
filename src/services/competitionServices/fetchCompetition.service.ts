@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 import Competition from "../../models/competition.model";
 import { AppError } from "../../utils/errors.utils";
 
-interface Pagination {
+interface IFetchCompetition {
   page: number;
   limit: number;
+  search?: string;
 }
 
 export const fetchSingleCompetition = async (id: string) => {
@@ -30,14 +31,26 @@ export const fetchSingleCompetition = async (id: string) => {
   }
 };
 
-export const fetchAllCompetitions = async ({ page, limit }: Pagination) => {
+export const fetchAllCompetitions = async ({
+  page,
+  limit,
+  search,
+}: IFetchCompetition) => {
   const totalCompetitions = await Competition.countDocuments({
     $or: [{ "deleted.isDeleted": false }, { "deleted.isDeleted": null }],
   });
 
   const offset = (page - 1) * limit;
 
-  const competitions = await Competition.find()
+  const searchQuery = search
+    ? search
+        .split(" ")
+        .map((word) => ({ title: { $regex: word, $options: "i" } }))
+    : [];
+
+  const competitions = await Competition.find(
+    searchQuery.length ? { $and: searchQuery } : {}
+  )
     .skip(offset)
     .limit(limit)
     .lean({ virtuals: true });

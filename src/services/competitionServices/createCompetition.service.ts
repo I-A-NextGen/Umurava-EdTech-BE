@@ -1,4 +1,5 @@
 import Competition from "../../models/competition.model";
+import { AppError } from "../../utils/errors.utils";
 
 export interface ICompetitionInputs {
   title: string;
@@ -18,6 +19,19 @@ export interface ICompetitionInputs {
 }
 
 const createNewCompetition = async (competitionInputs: ICompetitionInputs) => {
+  const existingCompetition = await Competition.findOne({
+    title: { $regex: new RegExp(competitionInputs.title, "i") },
+    creator: competitionInputs.creator,
+  });
+
+  if (existingCompetition) {
+    throw new AppError(
+      "fail",
+      409,
+      "You already have a competition with the same title.",
+      true
+    );
+  }
 
   const competition = await Competition.create({
     ...competitionInputs,

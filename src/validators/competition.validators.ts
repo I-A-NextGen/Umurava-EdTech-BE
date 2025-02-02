@@ -30,6 +30,7 @@ export const postCompetitionSchema = Joi.object({
 export const getCompetitionsSchema = Joi.object({
   page: Joi.string().pattern(/\d+$/),
   limit: Joi.string().pattern(/\d+$/),
+  search: Joi.string(),
 });
 
 export const putCompetitionSchema = postCompetitionSchema.fork(

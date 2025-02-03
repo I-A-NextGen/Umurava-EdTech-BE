@@ -1,19 +1,25 @@
 import { Model, model, Schema, Types, models } from "mongoose";
 
-interface IParticipant {
+export interface IParticipant extends Document {
   _id: Types.ObjectId;
-  userId: Types.ObjectId;
-  challengeId: Types.ObjectId;
+  user: Types.ObjectId;
+  competition: Types.ObjectId;
 }
 
 const participantSchema = new Schema<IParticipant, Model<IParticipant>>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    challengeId: { type: Schema.Types.ObjectId, ref: "ChallengeHackathon", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    competition: {
+      type: Schema.Types.ObjectId,
+      ref: "Competition",
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const Participant = models.Participant || model<IParticipant>("Participant", participantSchema);
+const Participant =
+  (models.Participant as Model<IParticipant>) ||
+  model<IParticipant, Model<IParticipant>>("Participant", participantSchema);
 
 export default Participant;

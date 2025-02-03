@@ -14,6 +14,8 @@ import {
 import { updateCompetition } from "../services/competitionServices/updateCompetition.service";
 import mongoose from "mongoose";
 import { softDeleteCompetition } from "../services/competitionServices/deleteCompetition.service";
+import { saveCompetitionApplication } from "../services/competitionServices/applyCompetition.service";
+import { fetchParticipants } from "../services/competitionServices/fetchParticipants.service";
 
 // Create new competitions
 export const postCompetition = async (
@@ -184,5 +186,69 @@ export const deleteCompetition = async (
     } else {
       next(error);
     }
+  }
+};
+
+//Apply to a competition
+export const postApplyCompetition = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const competitionId = req.params.id;
+
+    if (!req.user) {
+      throw new AppError("fail", 401, "Unauthorized: No user found.", true);
+    }
+
+    if (!competitionId) {
+      throw new AppError("fail", 400, "No competition id provided", true);
+    }
+
+    await saveCompetitionApplication(req.user.id, competitionId);
+
+    successResponse(res, 201, "Application submitted successfully!", undefined);
+
+    return;
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      next(
+        new AppError("fail", 404, `Competition not found,`, true, error.message)
+      );
+    } else {
+      next(error);
+    }
+  }
+};
+
+// Get competition participants
+
+export const getCompetitionParticipants = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const competitionId = req.params.id;
+
+    if (!req.user) {
+      throw new AppError("fail", 401, "Unauthorized: No user found.", true);
+    }
+
+    if (!competitionId) {
+      throw new AppError("fail", 400, "No competition id provided", true);
+    }
+
+    const participants = await fetchParticipants(
+      req.user,
+      competitionId as string
+    );
+    successResponse(res, 200, "Participants retrieved successful.", {
+      participants,
+    });
+    return;
+  } catch (error) {
+    next(error);
   }
 };

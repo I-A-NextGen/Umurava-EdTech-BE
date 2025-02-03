@@ -7,7 +7,7 @@ export enum UserRoles {
   CLIENT = "CLIENT",
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   _id: Types.ObjectId;
   email: string;
   password: string;

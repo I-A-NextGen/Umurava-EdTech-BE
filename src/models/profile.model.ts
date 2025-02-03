@@ -1,4 +1,5 @@
 import { Model, model, Schema, Types, models } from "mongoose";
+import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 interface IProfile {
   _id: Types.ObjectId;
@@ -49,6 +50,8 @@ const profileSchema = new Schema<IProfile, Model<IProfile>>(
 profileSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
+
+profileSchema.plugin(mongooseLeanVirtuals);
 
 const Profile =
   models.Profile || model<IProfile, Model<IProfile>>("Profile", profileSchema);

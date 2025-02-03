@@ -2,8 +2,10 @@ import { Router } from "express";
 import authenticate from "../middleware/auth.middleware";
 import {
   deleteCompetition,
+  getCompetitionParticipants,
   getCompetitions,
   getSingleCompetition,
+  postApplyCompetition,
   postCompetition,
   putCompetition,
 } from "../controllers/competition.controller";
@@ -40,6 +42,22 @@ router.delete(
   authenticate,
   authorize(UserRoles.CLIENT, UserRoles.ADMIN),
   deleteCompetition
+);
+
+// Post apply competition
+router.post(
+  "/:id/apply",
+  authenticate,
+  authorize(UserRoles.TALENT),
+  postApplyCompetition
+);
+
+// Get competition participants
+router.get(
+  "/:id/participants",
+  authenticate,
+  authorize(UserRoles.CLIENT, UserRoles.ADMIN),
+  getCompetitionParticipants
 );
 
 export default router;

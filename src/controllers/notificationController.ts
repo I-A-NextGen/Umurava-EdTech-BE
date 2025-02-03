@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import notificationService from "../services/notificationService";
-import { successResponse } from "../utils/responsesUtils";
+import { successResponse } from "../utils/responses.utils";
 
 export const sendNotification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

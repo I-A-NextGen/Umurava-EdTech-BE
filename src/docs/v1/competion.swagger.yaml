@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Competitions API
+  version: 1.0.0
+  description: API for managing competitions with CRUD operations.
+servers:
+  - url: http://localhost:3000
+    description: Local server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CompetitionInput:
+      type: object
+      properties:
+        title:
+          type: string
+        deadline:
+          type: string
+          format: date
+        duration:
+          type: string
+        prize:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        brief:
+          type: string
+        description:
+          type: string
+        requirement:
+          type: string
+        deliverables:
+          type: string
+        status:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        seniorityLevel:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+      required:
+        - title
+        - deadline
+        - duration
+        - prize
+        - contactEmail
+        - brief
+        - description
+        - requirement
+        - deliverables
+        - status
+        - skills
+        - seniorityLevel
+        - category
+security:
+  - bearerAuth: []
+tags:
+  - name: Competitions
+    description: Endpoints related to competitions
+paths:
+  /competitions:
+    post:
+      tags:
+        - Competitions
+      summary: Create a new competition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompetitionInput'
+      responses:
+        '201':
+          description: Competition created successfully
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict - Duplicate competition
+      security:
+        - bearerAuth: []
+    get:
+      tags:
+        - Competitions
+      summary: Get all competitions
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Competitions retrieved successfully
+  /competitions/{id}:
+    get:
+      tags:
+        - Competitions
+      summary: Get a single competition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Competition retrieved successfully
+        '404':
+          description: Competition not found
+    put:
+      tags:
+        - Competitions
+      summary: Update a competition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompetitionInput'
+      responses:
+        '200':
+          description: Competition updated successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Competition not found
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Competitions
+      summary: Delete a competition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Competition deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Competition not found
+      security:
+        - bearerAuth: []

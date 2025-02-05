@@ -16,6 +16,8 @@ import mongoose from "mongoose";
 import { softDeleteCompetition } from "../services/competitionServices/deleteCompetition.service";
 import { saveCompetitionApplication } from "../services/competitionServices/applyCompetition.service";
 import { fetchParticipants } from "../services/competitionServices/fetchParticipants.service";
+import Competition from "../models/competition.model";
+import User, { UserRoles } from "../models/user.model";
 
 // Create new competitions
 export const postCompetition = async (
@@ -252,3 +254,43 @@ export const getCompetitionParticipants = async (
     next(error);
   }
 };
+
+// metrics
+
+
+export const getTotalCompetitions = async (req: Request, res: Response) => {
+  try {
+    const totalCompetitions = await Competition.countDocuments({
+      $or: [{ 'deleted.isDeleted': false }, { 'deleted.isDeleted': null }],
+    });
+    res.json({ totalCompetitions });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+export const getCompetitionsByStatus = async (
+  req: Request,
+  res: Response,
+  status: string
+) => {
+  try {
+    const count = await Competition.countDocuments({
+      status,
+      $or: [{ 'deleted.isDeleted': false }, { 'deleted.isDeleted': null }],
+    });
+    res.json({ status, count });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+export const getTotalTalents = async (req: Request, res: Response) => {
+  try {
+    const totalTalents = await User.countDocuments({ role: UserRoles.TALENT });
+    res.json({ totalTalents });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+

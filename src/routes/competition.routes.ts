@@ -11,6 +11,7 @@ import {
 } from "../controllers/competition.controller";
 import authorize from "../middleware/rbac.middleware";
 import { UserRoles } from "../models/user.model";
+import { getTotalCompetitions, getCompetitionsByStatus, getTotalTalents } from '../controllers/competition.controller';
 
 const router = Router();
 
@@ -59,5 +60,14 @@ router.get(
   authorize(UserRoles.CLIENT, UserRoles.ADMIN),
   getCompetitionParticipants
 );
+
+// metrics
+
+router.get('/total', authenticate, authorize(UserRoles.ADMIN), getTotalCompetitions);
+router.get('/status/completed', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'completed'));
+router.get('/status/open', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'open'));
+router.get('/status/ongoing', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'ongoing'));
+router.get('/users/talent', authenticate, authorize(UserRoles.ADMIN), getTotalTalents);
+
 
 export default router;

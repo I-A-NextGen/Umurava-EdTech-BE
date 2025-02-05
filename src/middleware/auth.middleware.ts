@@ -22,7 +22,7 @@ const authenticate = async (
       throw new AppError(
         "fail",
         401,
-        "JWT token is required for authorization.",
+        "You must be Logged in, JWT is required",
         true
       );
     }
@@ -46,7 +46,6 @@ const authenticate = async (
       email: user.email,
       role: user.role,
     };
-
     next();
   } catch (error) {
     next(error);

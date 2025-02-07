@@ -114,6 +114,8 @@ competitionSchema.virtual("status").get(function () {
   return CompetitionStatus.COMPLETED;
 });
 
+competitionSchema.set()
+
 competitionSchema.plugin(mongooseLeanVirtuals);
 
 const Competition = model<ICompetition>("Competition", competitionSchema);

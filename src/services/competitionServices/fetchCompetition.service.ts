@@ -8,6 +8,26 @@ interface IFetchCompetition {
   search?: string;
 }
 
+const formatDuration = (duration: string) => {
+  const unit = duration.slice(-1);
+  let value = parseInt(duration.slice(0, -1), 10);
+
+  let formattedDuration = "";
+
+  switch (unit) {
+    case "d":
+      formattedDuration = value + (value > 1 ? " Days" : " Day");
+      break;
+    case "w":
+      formattedDuration = value + (value > 1 ? " Weeks" : " Week");
+      break;
+    case "h":
+      formattedDuration = value + (value > 1 ? " Months" : " Month");
+      break;
+  }
+  return formattedDuration;
+};
+
 export const fetchSingleCompetition = async (id: string) => {
   try {
     const competition = await Competition.findById(id).lean({ virtuals: true });
@@ -15,6 +35,8 @@ export const fetchSingleCompetition = async (id: string) => {
     if (!competition) {
       throw new AppError("fail", 404, "Competition not found.", true);
     }
+
+    competition.duration = formatDuration(competition.duration);
 
     return competition;
   } catch (error) {

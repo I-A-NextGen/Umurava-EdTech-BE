@@ -54,6 +54,7 @@ export const fetchAllCompetitions = async ({
     .skip(offset)
     .limit(limit)
     .lean({ virtuals: true });
+  
 
   return { totalCompetitions, competitions };
 };

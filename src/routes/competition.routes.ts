@@ -2,6 +2,7 @@ import { Router } from "express";
 import authenticate from "../middleware/auth.middleware";
 import {
   deleteCompetition,
+  getCompetitionsStats,
   getCompetitionParticipants,
   getCompetitions,
   getSingleCompetition,
@@ -22,6 +23,9 @@ router.get('/status/completed', authenticate, authorize(UserRoles.ADMIN), (req, 
 router.get('/status/open', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'open'));
 router.get('/status/ongoing', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'ongoing'));
 router.get('/users/talent', authenticate, authorize(UserRoles.ADMIN), getTotalTalents);
+
+// Get All Stats
+router.get('/stats', authenticate, getCompetitionsStats);
 
 // Create new competition
 router.post(

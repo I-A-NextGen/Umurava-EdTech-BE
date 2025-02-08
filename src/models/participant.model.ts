@@ -4,6 +4,8 @@ export interface IParticipant extends Document {
   _id: Types.ObjectId;
   user: Types.ObjectId;
   competition: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const participantSchema = new Schema<IParticipant, Model<IParticipant>>(

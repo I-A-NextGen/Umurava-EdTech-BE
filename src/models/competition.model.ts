@@ -40,6 +40,8 @@ interface ICompetition extends Document {
     isDeleted: boolean;
     deletedAt: Date | null;
   };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const competitionSchema = new Schema<ICompetition, Model<ICompetition>>(

@@ -19,6 +19,7 @@ import { fetchParticipants } from "../services/competitionServices/fetchParticip
 import Competition from "../models/competition.model";
 import User, { UserRoles } from "../models/user.model";
 import moment from "moment";
+import { calcStats } from "../services/competitionServices/calcStats.service";
 
 // Create new competitions
 export const postCompetition = async (
@@ -263,47 +264,44 @@ const getDateFilter = (filter: string) => {
   let startDate, endDate;
 
   switch (filter) {
-    case 'week':
-      startDate = new Date(now.startOf('week').format());
-      endDate = new Date(now.endOf('week').format());
+    case "week":
+      startDate = new Date(now.startOf("week").format());
+      endDate = new Date(now.endOf("week").format());
       break;
-    case 'month':
-      startDate = new Date(now.startOf('month').format());
-      endDate = new Date(now.endOf('month').format());
+    case "month":
+      startDate = new Date(now.startOf("month").format());
+      endDate = new Date(now.endOf("month").format());
       break;
-    case 'year':
-      startDate = new Date(now.startOf('year').format());
-      endDate = new Date(now.endOf('year').format());
+    case "year":
+      startDate = new Date(now.startOf("year").format());
+      endDate = new Date(now.endOf("year").format());
       break;
     default:
-      return {}; 
+      return {};
   }
 
   return { createdAt: { $gte: startDate, $lte: endDate } };
 };
 
-
 export const getTotalCompetitions = async (req: Request, res: Response) => {
   try {
     const dateFilter = getDateFilter(req.query.filter as string);
-    
+
     const filterQuery: any = {
-      $or: [{ 'deleted.isDeleted': false }, { 'deleted.isDeleted': null }],
-      ...dateFilter, 
+      $or: [{ "deleted.isDeleted": false }, { "deleted.isDeleted": null }],
+      ...dateFilter,
     };
 
-    console.log('Generated Query:', JSON.stringify(filterQuery, null, 2));
+    console.log("Generated Query:", JSON.stringify(filterQuery, null, 2));
 
     const competitions = await Competition.find(filterQuery);
-    
+
     res.json({ totalCompetitions: competitions.length, competitions });
   } catch (error: any) {
-    console.error('Error fetching competitions:', error);
+    console.error("Error fetching competitions:", error);
     res.status(500).json({ error: "Server error", details: error.message });
   }
 };
-
-
 
 export const getCompetitionsByStatus = async (
   req: Request,
@@ -314,26 +312,30 @@ export const getCompetitionsByStatus = async (
     const dateFilter = getDateFilter(req.query.filter as string);
 
     const filterQuery: any = {
-      $or: [{ 'deleted.isDeleted': false }, { 'deleted.isDeleted': null }],
-      ...dateFilter, 
+      $or: [{ "deleted.isDeleted": false }, { "deleted.isDeleted": null }],
+      ...dateFilter,
     };
 
-    console.log('Generated Query:', JSON.stringify(filterQuery, null, 2));
+    console.log("Generated Query:", JSON.stringify(filterQuery, null, 2));
 
-    const competitions = await Competition.find(filterQuery).lean({ virtuals: true });
+    const competitions = await Competition.find(filterQuery).lean({
+      virtuals: true,
+    });
 
-    const filteredCompetitions = competitions.filter(comp => comp.status === status);
+    const filteredCompetitions = competitions.filter(
+      (comp) => comp.status === status
+    );
 
-    res.json({ status, count: filteredCompetitions.length, competitions: filteredCompetitions });
+    res.json({
+      status,
+      count: filteredCompetitions.length,
+      competitions: filteredCompetitions,
+    });
   } catch (error: any) {
-    console.error('Error fetching competitions by status:', error);
+    console.error("Error fetching competitions by status:", error);
     res.status(500).json({ error: "Server error", details: error.message });
   }
 };
-
-
-
-
 
 export const getTotalTalents = async (req: Request, res: Response) => {
   try {
@@ -344,14 +346,36 @@ export const getTotalTalents = async (req: Request, res: Response) => {
       ...dateFilter,
     };
 
-    console.log('Generated Query:', JSON.stringify(filterQuery, null, 2));
+    console.log("Generated Query:", JSON.stringify(filterQuery, null, 2));
 
     const talents = await User.find(filterQuery);
 
     res.json({ totalTalents: talents.length, talents });
   } catch (error: any) {
-    console.error('Error fetching total talents:', error);
+    console.error("Error fetching total talents:", error);
     res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
+export const getCompetitionsStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      throw new AppError("fail", 401, "Unauthorized: No user found.", true);
+    }
+
+    const stats = await calcStats(req.user);
+
+    successResponse(
+      res,
+      200,
+      "Competition stats retrieved successfully",
+      stats
+    );
+  } catch (error) {
+    next(error);
+  }
+};

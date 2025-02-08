@@ -15,6 +15,14 @@ import { getTotalCompetitions, getCompetitionsByStatus, getTotalTalents } from '
 
 const router = Router();
 
+// metrics
+
+router.get('/total', authenticate, authorize(UserRoles.ADMIN), getTotalCompetitions);
+router.get('/status/completed', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'completed'));
+router.get('/status/open', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'open'));
+router.get('/status/ongoing', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'ongoing'));
+router.get('/users/talent', authenticate, authorize(UserRoles.ADMIN), getTotalTalents);
+
 // Create new competition
 router.post(
   "/",
@@ -61,13 +69,6 @@ router.get(
   getCompetitionParticipants
 );
 
-// metrics
-
-router.get('/total', authenticate, authorize(UserRoles.ADMIN), getTotalCompetitions);
-router.get('/status/completed', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'completed'));
-router.get('/status/open', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'open'));
-router.get('/status/ongoing', authenticate, authorize(UserRoles.ADMIN), (req, res) => getCompetitionsByStatus(req, res, 'ongoing'));
-router.get('/users/talent', authenticate, authorize(UserRoles.ADMIN), getTotalTalents);
 
 
 export default router;

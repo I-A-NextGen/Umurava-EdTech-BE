@@ -18,6 +18,7 @@ import { saveCompetitionApplication } from "../services/competitionServices/appl
 import { fetchParticipants } from "../services/competitionServices/fetchParticipants.service";
 import Competition from "../models/competition.model";
 import User, { UserRoles } from "../models/user.model";
+import moment from "moment";
 
 // Create new competitions
 export const postCompetition = async (
@@ -257,17 +258,52 @@ export const getCompetitionParticipants = async (
 
 // metrics
 
+const getDateFilter = (filter: string) => {
+  const now = moment.utc();
+  let startDate, endDate;
+
+  switch (filter) {
+    case 'week':
+      startDate = new Date(now.startOf('week').format());
+      endDate = new Date(now.endOf('week').format());
+      break;
+    case 'month':
+      startDate = new Date(now.startOf('month').format());
+      endDate = new Date(now.endOf('month').format());
+      break;
+    case 'year':
+      startDate = new Date(now.startOf('year').format());
+      endDate = new Date(now.endOf('year').format());
+      break;
+    default:
+      return {}; 
+  }
+
+  return { createdAt: { $gte: startDate, $lte: endDate } };
+};
+
 
 export const getTotalCompetitions = async (req: Request, res: Response) => {
   try {
-    const totalCompetitions = await Competition.countDocuments({
+    const dateFilter = getDateFilter(req.query.filter as string);
+    
+    const filterQuery: any = {
       $or: [{ 'deleted.isDeleted': false }, { 'deleted.isDeleted': null }],
-    });
-    res.json({ totalCompetitions });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+      ...dateFilter, 
+    };
+
+    console.log('Generated Query:', JSON.stringify(filterQuery, null, 2));
+
+    const competitions = await Competition.find(filterQuery);
+    
+    res.json({ totalCompetitions: competitions.length, competitions });
+  } catch (error: any) {
+    console.error('Error fetching competitions:', error);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
+
+
 
 export const getCompetitionsByStatus = async (
   req: Request,
@@ -275,22 +311,47 @@ export const getCompetitionsByStatus = async (
   status: string
 ) => {
   try {
-    const count = await Competition.countDocuments({
-      status,
+    const dateFilter = getDateFilter(req.query.filter as string);
+
+    const filterQuery: any = {
       $or: [{ 'deleted.isDeleted': false }, { 'deleted.isDeleted': null }],
-    });
-    res.json({ status, count });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+      ...dateFilter, 
+    };
+
+    console.log('Generated Query:', JSON.stringify(filterQuery, null, 2));
+
+    const competitions = await Competition.find(filterQuery).lean({ virtuals: true });
+
+    const filteredCompetitions = competitions.filter(comp => comp.status === status);
+
+    res.json({ status, count: filteredCompetitions.length, competitions: filteredCompetitions });
+  } catch (error: any) {
+    console.error('Error fetching competitions by status:', error);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
+
+
+
+
 export const getTotalTalents = async (req: Request, res: Response) => {
   try {
-    const totalTalents = await User.countDocuments({ role: UserRoles.TALENT });
-    res.json({ totalTalents });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    const dateFilter = getDateFilter(req.query.filter as string);
+
+    const filterQuery: any = {
+      role: UserRoles.TALENT,
+      ...dateFilter,
+    };
+
+    console.log('Generated Query:', JSON.stringify(filterQuery, null, 2));
+
+    const talents = await User.find(filterQuery);
+
+    res.json({ totalTalents: talents.length, talents });
+  } catch (error: any) {
+    console.error('Error fetching total talents:', error);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 

@@ -6,6 +6,8 @@ import {
 import loginUser from "../services/userServices/login.service";
 import { successResponse } from "../utils/responses.utils";
 import registerUser from "../services/userServices/registration.service";
+import { getProfileByUserId } from "../services/userServices/profile.service";
+import { AppError } from "../utils/errors.utils";
 
 export const postRegisterUser = async (
   req: Request,
@@ -48,6 +50,24 @@ export const postLoginUser = async (
       } as unknown as Record<string, object>);
     }
     return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError("fail", 401, "Unauthorized", true);
+    }
+
+    const profile = await getProfileByUserId(userId);
+    if (!profile) {
+      throw new AppError("fail", 404, "Profile not found", true);
+    }
+
+    res.status(200).json({ status: "success", data: profile });
   } catch (error) {
     next(error);
   }

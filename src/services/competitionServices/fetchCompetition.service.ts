@@ -51,10 +51,10 @@ export const fetchAllCompetitions = async ({
   const competitions = await Competition.find(
     searchQuery.length ? { $and: searchQuery } : {}
   )
+    .sort({ createdAt: -1 })
     .skip(offset)
     .limit(limit)
     .lean({ virtuals: true });
-  
 
   return { totalCompetitions, competitions };
 };
